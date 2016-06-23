@@ -18,6 +18,7 @@ interface FlashBootInterface {
     int read(char data[], unsigned nbytes,  unsigned char image_num);
     int write(char data[], unsigned nbytes);
     int prepare_boot_partition(unsigned image_size);
+    int erase_upgrade_image(void);
     int validate_flashing(void);
 };
 
@@ -32,4 +33,4 @@ enum configuration_type {
 [[combinable]]
 void flash_service(fl_SPIPorts &SPI,
                    interface FlashBootInterface server ?i_boot,
-                   interface FlashDataInterface server (i_data)[2]);
+                   interface FlashDataInterface server (&?i_data)[n_data], unsigned n_data);
