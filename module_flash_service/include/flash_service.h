@@ -29,6 +29,7 @@ enum configuration_type {
     MOTCTRL_CONFIG
 };
 
+[[combinable]]
 void flash_service(fl_SPIPorts &SPI,
                    interface FlashBootInterface server ?i_boot,
                    interface FlashDataInterface server (i_data)[2]);

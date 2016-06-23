@@ -11,25 +11,34 @@
 #include <flashlib.h>
 #include <print.h>
 #include <string.h>
+#include <stdint.h>
+#include <xs1.h>
 
-
-
+[[combinable]]
 void flash_service(fl_SPIPorts &SPI,
                    interface FlashBootInterface server ?i_boot,
                    interface FlashDataInterface server (i_data)[2]) {
 
-    if (isnull(i_boot) && isnull(i_data))
-    {
-        printstr("Error: No flash interfaces provided.\n");
-        return;
-    }
+    timer t_fake;
+    uint32_t time_fake;
+    unsigned int one_time_fake = 0;
 
-    printstr(">>   SOMANET FLASH SERVICE STARTING...\n");
-
-    flash_init(SPI);
+    t_fake :> time_fake;
 
     while (1) {
         select {
+            case (one_time_fake == 0) => t_fake when timerafter(time_fake) :> void: {
+                if (isnull(i_boot) && isnull(i_data)) {
+                    printstr("Error: No flash interfaces provided.\n");
+                    return;
+                }
+
+                printstr(">>   SOMANET FLASH SERVICE STARTING...\n");
+
+                flash_init(SPI);
+                one_time_fake = 1;
+                break;
+            }
             case i_data[int i].get_configurations(int type, unsigned char buffer[], unsigned &n_bytes) -> int result: {
                 unsigned char intermediate_buffer[1024];
                 unsigned intermediate_n_bytes;
